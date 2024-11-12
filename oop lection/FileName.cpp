@@ -156,11 +156,10 @@ void change(DArray& arr, std::function<void(int&)> action)
         action(arr.array[i]);
     }
 }
-void std::ostream& operator<<(std::ostream& stream, const DArray& arr)
-{
-    stre
+std::ostream& operator << (std::ostream& stream, const DArray& arr) {
+    return stream;
 }
-bool DArray::operator() const
+bool DArray::operator () const
 {
     bool result{ true };
     size_t i{};
