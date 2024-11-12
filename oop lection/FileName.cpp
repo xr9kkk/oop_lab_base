@@ -36,11 +36,21 @@ public:
     ~DArray() { destroy(); }
     static void print_count()
     {
-        std::cout << "Created " << counter << "objects \n";
+        std::cout << "Created " << counter << " objects \n";
     }
     DArray operator +(const DArray& arr) const;
     int operator [] (size_t index) const;
-    bool operator () ()const;
+    bool operator()() const
+    {
+        bool result{ true };
+        size_t i{};
+        while (i < size - 1 && result)
+            if (array[i] * array[i + 1] < 0)
+                ++i;
+            else
+                result = false;
+        return result;
+    }
     DArray& operator () (std::function<void(int&)>);
 
 };
@@ -50,11 +60,13 @@ int main()
 {
     DArray DA1(100, 10,-100,100);
     DA1.print();
-    std::cout << DA1.get_number();
+    std::cout << std::endl;
+    std::cout << DA1.get_number() << std::endl;
 
     DArray DA2(100, 10, -100, 100);
     DA2.print();
-    std::cout << DA2.get_number();
+    std::cout << std::endl;
+    std::cout << DA2.get_number()<<std::endl;
 
     DArray::print_count();
 
@@ -156,30 +168,21 @@ void change(DArray& arr, std::function<void(int&)> action)
         action(arr.array[i]);
     }
 }
+
 std::ostream& operator << (std::ostream& stream, const DArray& arr) {
     return stream;
 }
-bool DArray::operator () const
-{
-    bool result{ true };
-    size_t i{};
-    while (i < size - 1 && result)
-        if (array[i] * arrat[i + 1] < 0)
-            ++i;
-        else
-            result = false;
-    return result;
-}
+
 
 DArray operator+(const DArray& arr1, const DArray& arr2)
 {
     DArray result(arr1.get_max_size());
-    size_t size_arr1{ arr1.get_size() }, size_t size_arr2{ arr2.get_size() }, ;
+    size_t size_arr1{ arr1.get_size() }, size_arr2{ arr2.get_size() };
     size_t size_result = size_arr1 < size_arr2 ? size_arr1 : size_arr2;
     result.set_size(size_result);
     for (size_t i{}; i < size_result; ++i)
     {
-        result.set_elem( i, arr1.get_elem(i)) + arr2.get_elem(i);
+        result.set_elem( i, arr1.get_elem(i) + arr2.get_elem(i));
     }
     return result;
 }
