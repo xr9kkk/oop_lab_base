@@ -4,6 +4,10 @@
 #include <string>
 #include <functional>
 
+class DArray;
+
+DArray task_only_odd(const DArray& DA);
+
 class DArray
 {
 private:
@@ -20,6 +24,12 @@ public:
     DArray(size_t max_size);
     DArray(size_t max_size, size_t size, int A, int B);
     DArray(size_t max_size, std::istream& stream);
+    //--------------------------------------------------------------------
+    DArray(const DArray& other);
+    DArray& operator=(const DArray& other);
+    DArray(DArray&& tmp);
+    DArray& operator=(DArray&& tmp);
+    //--------------------------------------------------------------------
 
     std::string to_string() const;
 
@@ -60,16 +70,40 @@ int main()
 {
     DArray DA1(100, 10,-100,100);
     DA1.print();
-    std::cout << std::endl;
-    std::cout << DA1.get_number() << std::endl;
+    
 
-    DArray DA2(100, 10, -100, 100);
-    DA2.print();
-    std::cout << std::endl;
-    std::cout << DA2.get_number()<<std::endl;
+    DArray DA_2 = DA1;
+    DA_2.print();
+
+    DArray DA_3(7);
+    DA_3 = DA1;
+    DA_3.print();
+
+    DArray DA_odd = task_only_odd(DA1);
+    DA_odd.print();
+
+    DA_3 = task_only_odd(DA1);
+
 
     DArray::print_count();
 
+}
+
+DArray task_only_odd(const DArray& DA)
+{
+    size_t cnt{}, size = DA.get_size();
+    DArray result(DA.get_max_size());
+    for (size_t i{}; i < size; ++i)
+    {
+        int x = DA.get_elem(i);
+        if (x % 2)
+        {
+            result.set_elem(cnt, x);
+            ++cnt;
+        }
+    }
+    result.set_size(cnt);
+    return result;
 }
 
 DArray::DArray(size_t max_size)
@@ -97,6 +131,56 @@ DArray::DArray(size_t max_size, std::istream& stream)
         stream >> array[i];
     number = ++counter;
 
+}
+
+DArray::DArray(const DArray& other) : max_size(other.max_size), size(other.size)
+{
+    std::cout << "Copy constructor\n";
+    array = new int[max_size];
+    for (size_t i{}; i < size; ++i)
+    {
+        array[i] = other.array[i];
+    }
+    number = ++counter;
+}
+
+DArray& DArray::operator=(const DArray& other)
+{
+    if (this != &other)
+    {
+        std::cout << "Copy operator (assigment) \n";
+        destroy();
+        max_size = other.max_size;
+        size = other.size;
+        array = new int[max_size];
+        for (size_t i{}; i < size; ++i)
+        {
+            array[i] = other.array[i];
+        }
+        number = ++counter;
+    }
+    return *this;
+}
+
+DArray::DArray(DArray&& tmp) : max_size(tmp.max_size), size(tmp.size), array(tmp.array), number(tmp.number)
+{
+    std::cout << "Move constructot\n";
+    tmp.array = nullptr;
+}
+
+DArray& DArray::operator=(DArray&& tmp)
+{
+    if (this != &tmp)
+    {
+        std::cout << "Move operator (assigment)\n";
+        destroy();
+        max_size = tmp.max_size;
+        size = tmp.size;
+        array = tmp.array;
+        number = tmp.number;
+        tmp.array = nullptr;
+    }
+    return *this;
 }
 
 std::string DArray::to_string() const
